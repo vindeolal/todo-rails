@@ -1,6 +1,15 @@
 require "test_helper"
 
 class TasksControllerTest < ActionDispatch::IntegrationTest
+
+  test "Raises bad request with proper error" do
+    post "/tasks", params: { task: { order: 1 } }
+    assert_response :bad_request
+    response_data = JSON.parse(response.body)
+    assert_includes response_data["message"], "Name cannot be blank"
+    assert_includes response_data["message"], "Description cannot be blank"
+  end
+
   test "Create a new task" do
     create_some_tasks
     assert_response :success
@@ -48,7 +57,7 @@ class TasksControllerTest < ActionDispatch::IntegrationTest
 
 
   private
-  
+
   def create_some_tasks()
     post "/tasks", params: { task: { name: "New Task", description: "Test description", order: 1 } }
   end

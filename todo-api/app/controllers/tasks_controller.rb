@@ -12,7 +12,7 @@ class TasksController < ApplicationController
     if @task.save
       render json: @task
     else
-      render error: { error: "Unable to create task"}, status: 400
+      render json: { message: @task.errors.full_messages.join(", ")}, status: 400
     end
   end
 
@@ -29,7 +29,7 @@ class TasksController < ApplicationController
       @task.update(task_params)
       render json: {message: "Task updated successfully"}, status: 200
     else
-      render error: { error: "Unable to update task"}, status: 400
+      render json: { message: @task.errors.full_messages.join(", ")}, status: 400
     end
   end
 
@@ -40,7 +40,7 @@ class TasksController < ApplicationController
       @task.destroy
       render json: {message: "Task deleted successfully"}, status: 200
     else
-      render error: { error: "Unable to update task"}, status: 400
+      render error: { error: "Unable to delete task"}, status: 400
     end
   end
 
