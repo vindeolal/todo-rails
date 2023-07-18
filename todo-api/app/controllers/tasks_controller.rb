@@ -1,12 +1,12 @@
 class TasksController < ApplicationController
 
-  # GET /tasts
+  # GET /tasks
   def index
     @tasks = Task.all
     render json: @tasks
   end
 
-  # POST /tasts
+  # POST /tasks
   def create
     @task = Task.new(task_params)
     if @task.save
