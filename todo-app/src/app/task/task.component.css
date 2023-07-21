@@ -1,0 +1,15 @@
+.destroy {
+  color: red;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.done-background {
+  background-color: rgb(161, 234, 161);
+  flex: 0.7;
+}
+
+.normal-background {
+  background-color: white;
+  flex: 0.7;
+}

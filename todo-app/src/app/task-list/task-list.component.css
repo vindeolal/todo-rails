@@ -1,0 +1,43 @@
+input[type="text"] {
+  border: solid 1px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-right: 4px;
+  display: inline-block;
+  width: 30%;
+}
+
+button {
+  padding: 10px;
+  border: solid 1px;
+  background-color: blue;
+  color: white;
+  border-radius: 8px;
+  flex: 0.1;
+}
+
+input {
+  width: 90% !important;
+}
+
+.new-task-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.task-input {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0.9;
+}
+
+.desc-input {
+  margin-top: 5px;
+}
+
+.main-container {
+  margin-left: 20%;
+  margin-right: 20%;
+}
