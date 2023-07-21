@@ -5,9 +5,15 @@ import { Component } from '@angular/core';
   template: `
    <main>
       <a [routerLink]="['/']">
-        <header class="brand-name">
-          <img src="/assets/logo.svg" alt="logo" aria-hidden="true" width="50" height="50">
-          TODO List
+        <header>
+        <div class="header-container">
+          <div>
+            <img src="/assets/logo.svg" alt="logo" aria-hidden="true" width="50" height="50">
+          </div>
+          <div>
+            TODO Tasks
+          </div>
+        </div>  
         </header>
       </a>
       <section class="content">

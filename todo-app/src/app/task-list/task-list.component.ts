@@ -1,5 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Task } from '../task';
+import { TaskService } from '../task.service';
 
 @Component({
   selector: 'app-task-list',
@@ -19,8 +20,8 @@ import { Task } from '../task';
               <li *ngFor="let task of tasks; let i = index" [class.completed]="task.isDone">
                 <app-task
                   [task]="task"
-                  (toggleCompleted)="onToggleTodoComplete(i, task.isDone)"
-                  (remove)="onRemoveTodo(i)">
+                  (toggleCompleted)="onToggleComplete(i, task.isDone)"
+                  (remove)="onRemoveTask(i)">
                 </app-task>
               </li>
             </ul>
@@ -29,30 +30,32 @@ import { Task } from '../task';
   `,
   styleUrls: ['./task-list.component.css']
 })
-export class TaskListComponent {
+export class TaskListComponent implements OnInit {
 
   newTaskName: string = '';
   newTaskDescription: string = '';
 
-  @Input()
-  tasks: Task[] = [
-    new Task("First Task", "First description"),
-    new Task("Second Task", "Second description"),
-  ];
+  tasks: Task[] = [];
 
-  constructor() {
+  constructor(private taskService: TaskService) {
+  }
+
+  ngOnInit(): void {
+    this.tasks = this.taskService.getTasks();
   }
 
   addTask() {
-    this.tasks.push(new Task(this.newTaskName, this.newTaskDescription));
+    this.tasks = this.taskService.addTask(this.newTaskName, this.newTaskDescription);
+    this.newTaskName = '';
+    this.newTaskDescription = '';
   }
 
-  onToggleTodoComplete(taskIndex: number, isDone: boolean) {
-    this.tasks[taskIndex].isDone = !isDone;
+  onToggleComplete(taskIndex: number, isDone: boolean) {
+    this.tasks = this.taskService.markComplete(taskIndex, isDone);
   }
 
-  onRemoveTodo(taskIndex: number) {
-    this.tasks.splice(taskIndex, 1)
+  onRemoveTask(taskIndex: number) {
+    this.tasks = this.taskService.removeTask(taskIndex);
   }
 
 }
