@@ -12,7 +12,7 @@ import { TaskService } from '../task.service';
             <input [(ngModel)]="newTaskName" type="text" placeholder="Add Task">
             <input class="desc-input" *ngIf="newTaskName" [(ngModel)]="newTaskDescription" type="text" placeholder="Add Description"/>
           </div>
-          <button  class="primary" type="button" (click)="addTask()" [disabled]="!newTaskDescription">Add Task</button>
+          <button [ngClass]="newTaskDescription ? 'primary' : 'secondary'" type="button" (click)="addTask()" [disabled]="!newTaskDescription">Add Task</button>
       </div>
       </section>
     <section class="main" *ngIf="tasks.length > 0">
