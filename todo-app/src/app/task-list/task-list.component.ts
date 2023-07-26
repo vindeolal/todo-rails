@@ -9,19 +9,19 @@ import { TaskService } from '../task.service';
     <section>
       <div class="new-task-container">
           <div class="task-input">
-            <input [(ngModel)]="newTaskName" type="text" placeholder="Add Task">
-            <input class="desc-input" *ngIf="newTaskName" [(ngModel)]="newTaskDescription" type="text" placeholder="Add Description"/>
+            <input [(ngModel)]="newTask.name" type="text" placeholder="Add Task" required>
+            <input class="desc-input" *ngIf="newTask.name" [(ngModel)]="newTask.description" type="text" placeholder="Add Description" required/>
           </div>
-          <button [ngClass]="newTaskDescription ? 'primary' : 'secondary'" type="button" (click)="addTask()" [disabled]="!newTaskDescription">Add Task</button>
+          <button [ngClass]="newTask.description ? 'primary' : 'secondary'" type="button" (click)="addTask()" [disabled]="!newTask.description">Add Task</button>
       </div>
       </section>
     <section class="main" *ngIf="tasks.length > 0">
             <ul class="todo-list">
-              <li *ngFor="let task of tasks; let i = index" [class.completed]="task.isDone">
+              <li *ngFor="let task of tasks" [class.completed]="task.isDone">
                 <app-task
                   [task]="task"
-                  (toggleCompleted)="onToggleComplete(i, task.isDone)"
-                  (remove)="onRemoveTask(i)">
+                  (toggleCompleted)="onToggleComplete(task)"
+                  (remove)="onRemoveTask(task.id)">
                 </app-task>
               </li>
             </ul>
@@ -32,30 +32,47 @@ import { TaskService } from '../task.service';
 })
 export class TaskListComponent implements OnInit {
 
-  newTaskName: string = '';
-  newTaskDescription: string = '';
-
   tasks: Task[] = [];
+  newTask: Task = new Task('', '');
 
   constructor(private taskService: TaskService) {
   }
 
   ngOnInit(): void {
-    this.tasks = this.taskService.getTasks();
+    this._fetchTasks();
   }
 
   addTask() {
-    this.tasks = this.taskService.addTask(this.newTaskName, this.newTaskDescription);
-    this.newTaskName = '';
-    this.newTaskDescription = '';
+    this.taskService.addTask(this.newTask)
+      .subscribe(this._taskObserver("Task created", "Error creating task"))
+    this.newTask = new Task('', '')
   }
 
-  onToggleComplete(taskIndex: number, isDone: boolean) {
-    this.tasks = this.taskService.markComplete(taskIndex, isDone);
+  onToggleComplete(task: Task) {
+    task.isDone = !task.isDone;
+    this.taskService.updateTask(task)
+      .subscribe(this._taskObserver("Task updated", "Error updating task"))
   }
 
-  onRemoveTask(taskIndex: number) {
-    this.tasks = this.taskService.removeTask(taskIndex);
+  onRemoveTask(taskId: number) {
+    this.taskService.removeTask(taskId)
+      .subscribe(this._taskObserver("Task deleted", "Error deleting task"))
+  }
+
+  _fetchTasks() {
+    this.taskService.getTasks().subscribe(tasks => this.tasks = tasks);
+  }
+
+  _taskObserver(successMessage: string, failureMessage: string) {
+    return {
+      next: () => {
+        console.log(`${successMessage}`)
+        this._fetchTasks();
+      },
+      error: (error: Error) => {
+        console.error(`${failureMessage} : ${error}`);
+      }
+    }
   }
 
 }

@@ -1,34 +1,65 @@
 import { Injectable } from '@angular/core';
 import { Task } from './task';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, of, pipe, retry } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
 
-  tasks: Task[] = [
-    new Task("First Task", "First description"),
-    new Task("Second Task", "Second description"),
-  ];
+  constructor(private http: HttpClient) { }
 
-  constructor() { }
+  BASE_URL = 'http://localhost:3000';
 
-  getTasks(): Task[] {
-    return this.tasks;
+  getTasks(): Observable<Task[]> {
+    return this.http
+      .get<Task[]>(`${this.BASE_URL}/tasks`)
+      .pipe(
+        retry(2),
+        catchError(() => of([]))
+      )
   }
 
-  addTask(name: string, description: string): Task[] {
-    this.tasks.push(new Task(name, description));
-    return this.tasks;
+  addTask(newTask: Task): Observable<any> {
+    return this.http
+      .post(`${this.BASE_URL}/tasks`, newTask)
+      .pipe(
+        retry(2),
+        catchError(() => {
+          throw new Error("Failed to save the task. Please try again.")
+        })
+      )
   }
 
-  markComplete(taskIndex: number, isDone: boolean): Task[] {
-    this.tasks[taskIndex].isDone = !isDone;
-    return this.tasks;
+  updateTask(updatedTask: Task): Observable<any> {
+    return this.http
+      .put(`${this.BASE_URL}/tasks/${updatedTask.id}`, updatedTask)
+      .pipe(
+        retry(2),
+        catchError(() => {
+          throw new Error("Failed to update the task. Please try again.")
+        })
+      )
   }
 
-  removeTask(taskIndex: number): Task[] {
-    this.tasks.splice(taskIndex, 1)
-    return this.tasks;
+  removeTask(taskId: number): Observable<any> {
+    return this.http
+      .delete(`${this.BASE_URL}/tasks/${taskId}`)
+      .pipe(
+        retry(2),
+        catchError(() => {
+          throw new Error("Failed to delete the task. Please try again.")
+        })
+      )
+  }
+
+  _handleTaskResponse(errorMessage: string) {
+    return pipe(
+      retry(2),
+      catchError(() => {
+        throw new Error(errorMessage)
+      })
+    )
   }
 }

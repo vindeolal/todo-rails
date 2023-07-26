@@ -8,6 +8,7 @@ import { TaskListComponent } from './task-list/task-list.component';
 import { provideRouter } from '@angular/router';
 import routeConfig from './routes';
 import { FormsModule } from '@angular/forms'; 
+import { HttpClientModule } from '@angular/common/http';
 
 
 @NgModule({
@@ -19,7 +20,8 @@ import { FormsModule } from '@angular/forms';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [
     provideRouter(routeConfig)
