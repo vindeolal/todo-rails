@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Task } from '../task';
 import { TaskService } from '../task.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-task-list',
@@ -36,8 +37,10 @@ export class TaskListComponent implements OnInit {
   newTask: Task = new Task('', '');
   isEdit: boolean = false;
 
-  constructor(private taskService: TaskService) {
-  }
+  constructor(
+    private taskService: TaskService,
+    private _snackBar: MatSnackBar
+  ) { }
 
   ngOnInit(): void {
     this._fetchTasks();
@@ -56,8 +59,9 @@ export class TaskListComponent implements OnInit {
   }
 
   onToggleComplete(task: Task) {
-    task.isDone = !task.isDone;
-    this.taskService.updateTask(task)
+    const clonedTask = task.clone();
+    clonedTask.isDone = !clonedTask.isDone;
+    this.taskService.updateTask(clonedTask)
       .subscribe(this._taskObserver("Task updated", "Error updating task"))
   }
 
@@ -75,17 +79,25 @@ export class TaskListComponent implements OnInit {
     this.taskService.getTasks().subscribe(tasks => this.tasks = tasks);
   }
 
-  //TODO: add snackbar here???
   _taskObserver(successMessage: string, failureMessage: string) {
     return {
       next: () => {
         console.log(`${successMessage}`)
+        this._displaySnackbar(successMessage, 'snackbar-success');
         this._fetchTasks();
       },
       error: (error: Error) => {
         console.error(`${failureMessage} : ${error}`);
+        this._displaySnackbar(failureMessage, 'snackbar-failure');
       }
     }
+  }
+
+  _displaySnackbar(message: string, className: string) {
+    this._snackBar.open(message, 'Close', {
+      duration: 3000,
+      panelClass: [className]
+    });
   }
 
 }

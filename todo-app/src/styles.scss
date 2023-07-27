@@ -4,3 +4,19 @@ body {
   }
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.mat-mdc-snack-bar-container {
+  &.snackbar-success {
+    --mdc-snackbar-container-color: rgb(2, 161, 2);
+    --mat-mdc-snack-bar-button-color: #fff;
+    --mdc-snackbar-supporting-text-color: #181717;
+  }
+}
+
+.mat-mdc-snack-bar-container {
+  &.snackbar-failure {
+    --mdc-snackbar-container-color: #ce3203;
+    --mat-mdc-snack-bar-button-color: #181717;
+    --mdc-snackbar-supporting-text-color: #fff;
+  }
+}
