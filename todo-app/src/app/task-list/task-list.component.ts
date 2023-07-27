@@ -16,15 +16,15 @@ import { TaskService } from '../task.service';
       </div>
       </section>
     <section class="main" *ngIf="tasks.length > 0">
-            <ul class="todo-list">
-              <li *ngFor="let task of tasks" [class.completed]="task.isDone">
-                <app-task
-                  [task]="task"
-                  (toggleCompleted)="onToggleComplete(task)"
-                  (remove)="onRemoveTask(task.id)">
-                </app-task>
-              </li>
-            </ul>
+      <div *ngFor="let task of tasks" class="card-container">
+        <app-task
+            [task]="task"
+            (toggleCompleted)="onToggleComplete(task)"
+            (remove)="onRemoveTask(task.id)"
+            (edit)="onEditTask(task)"
+            >
+        </app-task>
+      </div>
     </section>
   </div>
   `,
@@ -34,6 +34,7 @@ export class TaskListComponent implements OnInit {
 
   tasks: Task[] = [];
   newTask: Task = new Task('', '');
+  isEdit: boolean = false;
 
   constructor(private taskService: TaskService) {
   }
@@ -43,9 +44,15 @@ export class TaskListComponent implements OnInit {
   }
 
   addTask() {
-    this.taskService.addTask(this.newTask)
-      .subscribe(this._taskObserver("Task created", "Error creating task"))
+    if (this.isEdit) {
+      this.taskService.updateTask(this.newTask)
+        .subscribe(this._taskObserver("Task updated", "Error updating task"))
+    } else {
+      this.taskService.addTask(this.newTask)
+        .subscribe(this._taskObserver("Task created", "Error creating task"))
+    }
     this.newTask = new Task('', '')
+    this.isEdit = false;
   }
 
   onToggleComplete(task: Task) {
@@ -59,10 +66,16 @@ export class TaskListComponent implements OnInit {
       .subscribe(this._taskObserver("Task deleted", "Error deleting task"))
   }
 
+  onEditTask(task: Task) {
+    this.newTask = task.clone();
+    this.isEdit = true;
+  }
+
   _fetchTasks() {
     this.taskService.getTasks().subscribe(tasks => this.tasks = tasks);
   }
 
+  //TODO: add snackbar here???
   _taskObserver(successMessage: string, failureMessage: string) {
     return {
       next: () => {

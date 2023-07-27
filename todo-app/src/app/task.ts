@@ -12,4 +12,10 @@ export class Task {
         this.order = order;
     }
 
+    clone() {
+        const newTask = new Task(this.name, this.description, this.isDone, this.order);
+        newTask.id = this.id;
+        return newTask;
+    }
+
 }

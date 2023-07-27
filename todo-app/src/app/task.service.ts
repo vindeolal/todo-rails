@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Task } from './task';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of, pipe, retry } from 'rxjs';
+import { Observable, catchError, map, of, pipe, retry } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,10 @@ export class TaskService {
     return this.http
       .get<Task[]>(`${this.BASE_URL}/tasks`)
       .pipe(
+        map((tasks) => {
+          const sortedTasks = tasks.sort((a, b) => a.id - b.id)
+          return sortedTasks.map(this._mapTask)
+        }),
         retry(2),
         catchError(() => of([]))
       )
@@ -61,5 +65,11 @@ export class TaskService {
         throw new Error(errorMessage)
       })
     )
+  }
+
+  _mapTask(obj: any): Task {
+    const task = new Task(obj.name, obj.description, obj.isDone, obj.order);
+    task.id = obj.id;
+    return task;
   }
 }

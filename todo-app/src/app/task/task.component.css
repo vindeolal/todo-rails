@@ -13,3 +13,12 @@
   background-color: white;
   flex: 0.7;
 }
+
+.no-top-padding {
+  padding-top: 0px;
+}
+
+.card-header {
+  padding: 8px 8px 0px 8px;
+  
+}
