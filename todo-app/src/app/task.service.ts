@@ -1,7 +1,7 @@
-import { Injectable } from '@angular/core';
+import { Injectable, PipeTransform } from '@angular/core';
 import { Task } from './task';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, map, of, pipe, retry } from 'rxjs';
+import { MonoTypeOperatorFunction, Observable, OperatorFunction, catchError, map, retry } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,59 +12,38 @@ export class TaskService {
 
   BASE_URL = 'http://localhost:3000';
 
-  getTasks(): Observable<Task[]> {
+  getTasks(): Observable<any> {
     return this.http
       .get<Task[]>(`${this.BASE_URL}/tasks`)
       .pipe(
-        map((tasks) => {
-          const sortedTasks = tasks.sort((a, b) => a.id - b.id)
-          return sortedTasks.map(this._mapTask)
-        }),
-        retry(2),
-        catchError(() => of([]))
+        map((tasks) => tasks.map(this._mapTask)),
+        ...this._handleTaskResponse("Failed to fetch the task. Please try again.")
       )
   }
 
   addTask(newTask: Task): Observable<any> {
     return this.http
       .post(`${this.BASE_URL}/tasks`, newTask)
-      .pipe(
-        retry(2),
-        catchError(() => {
-          throw new Error("Failed to save the task. Please try again.")
-        })
-      )
+      .pipe(...this._handleTaskResponse("Failed to save the task. Please try again."))
   }
 
   updateTask(updatedTask: Task): Observable<any> {
     return this.http
       .put(`${this.BASE_URL}/tasks/${updatedTask.id}`, updatedTask)
-      .pipe(
-        retry(2),
-        catchError(() => {
-          throw new Error("Failed to update the task. Please try again.")
-        })
-      )
+      .pipe(...this._handleTaskResponse("Failed to update the task. Please try again."))
   }
 
   removeTask(taskId: number): Observable<any> {
     return this.http
       .delete(`${this.BASE_URL}/tasks/${taskId}`)
-      .pipe(
-        retry(2),
-        catchError(() => {
-          throw new Error("Failed to delete the task. Please try again.")
-        })
-      )
+      .pipe(...this._handleTaskResponse("Failed to delete the task. Please try again."))
   }
 
-  _handleTaskResponse(errorMessage: string) {
-    return pipe(
+  _handleTaskResponse(errorMessage: string): [MonoTypeOperatorFunction<unknown>, OperatorFunction<unknown, unknown>] {
+    return [
       retry(2),
-      catchError(() => {
-        throw new Error(errorMessage)
-      })
-    )
+      catchError(() => { throw new Error(errorMessage) })
+    ]
   }
 
   _mapTask(obj: any): Task {
@@ -72,4 +51,5 @@ export class TaskService {
     task.id = obj.id;
     return task;
   }
+
 }

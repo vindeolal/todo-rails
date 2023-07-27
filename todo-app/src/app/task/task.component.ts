@@ -1,8 +1,23 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Task } from '../task';
+import {MatCardModule} from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
+import { NgClass } from '@angular/common';
 
 @Component({
+  standalone: true,
   selector: 'app-task',
+  imports: [
+    NgClass,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatTooltipModule, 
+    MatSnackBarModule
+  ],
   template: `
   <div>
     <mat-card>
@@ -37,8 +52,6 @@ export class TaskComponent {
 
   @Output()
   toggleCompleted: EventEmitter<Task> = new EventEmitter();
-
-  constructor() { }
 
   toggleTaskComplete(task: Task) {
     this.toggleCompleted.emit(task);

@@ -2,9 +2,20 @@ import { Component, OnInit } from '@angular/core';
 import { Task } from '../task';
 import { TaskService } from '../task.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { TaskComponent } from '../task/task.component';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-task-list',
+  standalone: true,
+  imports: [
+    TaskComponent,
+    NgClass,
+    NgFor,
+    NgIf,
+    FormsModule
+  ],
   template: `
   <div class="main-container">
     <section>
@@ -49,10 +60,10 @@ export class TaskListComponent implements OnInit {
   addTask() {
     if (this.isEdit) {
       this.taskService.updateTask(this.newTask)
-        .subscribe(this._taskObserver("Task updated", "Error updating task"))
+        .subscribe(this._taskObserver("Task updated"))
     } else {
       this.taskService.addTask(this.newTask)
-        .subscribe(this._taskObserver("Task created", "Error creating task"))
+        .subscribe(this._taskObserver("Task created"))
     }
     this.newTask = new Task('', '')
     this.isEdit = false;
@@ -62,12 +73,12 @@ export class TaskListComponent implements OnInit {
     const clonedTask = task.clone();
     clonedTask.isDone = !clonedTask.isDone;
     this.taskService.updateTask(clonedTask)
-      .subscribe(this._taskObserver("Task updated", "Error updating task"))
+      .subscribe(this._taskObserver("Task updated"))
   }
 
   onRemoveTask(taskId: number) {
     this.taskService.removeTask(taskId)
-      .subscribe(this._taskObserver("Task deleted", "Error deleting task"))
+      .subscribe(this._taskObserver("Task deleted"))
   }
 
   onEditTask(task: Task) {
@@ -79,16 +90,14 @@ export class TaskListComponent implements OnInit {
     this.taskService.getTasks().subscribe(tasks => this.tasks = tasks);
   }
 
-  _taskObserver(successMessage: string, failureMessage: string) {
+  _taskObserver(successMessage: string) {
     return {
       next: () => {
-        console.log(`${successMessage}`)
         this._displaySnackbar(successMessage, 'snackbar-success');
         this._fetchTasks();
       },
       error: (error: Error) => {
-        console.error(`${failureMessage} : ${error}`);
-        this._displaySnackbar(failureMessage, 'snackbar-failure');
+        this._displaySnackbar(error.message, 'snackbar-failure');
       }
     }
   }

@@ -2,7 +2,7 @@ class TasksController < ApplicationController
 
   # GET /tasks
   def index
-    @tasks = Task.all
+    @tasks = Task.order(:id).all
     render json: @tasks
   end
 
