@@ -2,6 +2,7 @@ import { Injectable, PipeTransform } from '@angular/core';
 import { Task } from './task';
 import { HttpClient } from '@angular/common/http';
 import { MonoTypeOperatorFunction, Observable, OperatorFunction, catchError, map, retry } from 'rxjs';
+import { Audit } from './audit';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +38,15 @@ export class TaskService {
     return this.http
       .delete(`${this.BASE_URL}/tasks/${taskId}`)
       .pipe(...this._handleTaskResponse("Failed to delete the task. Please try again."))
+  }
+
+  getAuditForTask(taskId: number) {
+    return this.http
+      .get<[]>(`${this.BASE_URL}/audits/Task/${taskId}`)
+      .pipe(
+        map((audits) => audits.map(Audit.mapAudit)),
+        ...this._handleTaskResponse("Failed to get the task Details.")
+        )
   }
 
   _handleTaskResponse(errorMessage: string): [MonoTypeOperatorFunction<unknown>, OperatorFunction<unknown, unknown>] {

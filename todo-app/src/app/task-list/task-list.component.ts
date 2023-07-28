@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Task } from '../task';
 import { TaskService } from '../task.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 import { TaskComponent } from '../task/task.component';
 import { NgClass, NgFor, NgIf } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +15,8 @@ import { FormsModule } from '@angular/forms';
     NgClass,
     NgFor,
     NgIf,
-    FormsModule
+    FormsModule,
+    MatSnackBarModule
   ],
   template: `
   <div class="main-container">

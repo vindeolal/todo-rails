@@ -5,6 +5,11 @@ body {
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+.main-container {
+  margin-left: 20%;
+  margin-right: 20%;
+}
+
 .mat-mdc-snack-bar-container {
   &.snackbar-success {
     --mdc-snackbar-container-color: rgb(2, 161, 2);

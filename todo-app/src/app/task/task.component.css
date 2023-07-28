@@ -14,8 +14,9 @@
   flex: 0.7;
 }
 
-.no-top-padding {
+.actions {
   padding-top: 0px;
+  justify-content: space-between;
 }
 
 .card-header {
