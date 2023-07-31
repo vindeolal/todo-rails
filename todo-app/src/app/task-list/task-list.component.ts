@@ -89,7 +89,7 @@ export class TaskListComponent implements OnInit {
   }
 
   _fetchTasks() {
-    this.taskService.getTasks().subscribe(tasks => this.tasks = tasks);
+    this.taskService.getTasksGQL().subscribe(tasks => this.tasks = tasks);
   }
 
   _taskObserver(successMessage: string) {

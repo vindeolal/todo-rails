@@ -7,7 +7,7 @@ module Types
     field :tasks, [Types::TaskType]
 
     def tasks
-      Task.all
+      Task.order(:id).all
     end
   end
 end

@@ -3,13 +3,18 @@ import { Task } from './task';
 import { HttpClient } from '@angular/common/http';
 import { MonoTypeOperatorFunction, Observable, OperatorFunction, catchError, map, retry } from 'rxjs';
 import { Audit } from './audit';
+import { Apollo } from 'apollo-angular';
+import { GET_ALL_TASKS } from './graphql/graphql.queries';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private apollo: Apollo
+  ) { }
 
   BASE_URL = 'http://localhost:3000';
 
@@ -46,7 +51,17 @@ export class TaskService {
       .pipe(
         map((audits) => audits.map(Audit.mapAudit)),
         ...this._handleTaskResponse("Failed to get the task Details.")
-        )
+      )
+  }
+
+  getTasksGQL(): Observable<any> {
+    return this.apollo.query({
+      query: GET_ALL_TASKS,
+      fetchPolicy: "network-only"
+    }).pipe(
+      map(({ data }: any) => data.tasks.map(this._mapTask)),
+      ...this._handleTaskResponse("Failed to fetch the task. Please try again.")
+    )
   }
 
   _handleTaskResponse(errorMessage: string): [MonoTypeOperatorFunction<unknown>, OperatorFunction<unknown, unknown>] {
